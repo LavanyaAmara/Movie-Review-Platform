@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    {% if current_user.is_authenticated %}
+        <h2 style="text-align:center; color:#1e3a8a; margin-bottom:10px;">
+            👋 Welcome, {{ current_user.username }}!
+        </h2>
+        <p style="text-align:center; color:#475569; margin-bottom:30px;">
+            Share your thoughts on your favorite <strong>books</strong> and <strong>movies</strong> —
+            see what others are loving too! 💫
+        </p>
+        <div style="text-align:center; margin-bottom:25px;">
+            <a href="{{ url_for('post_review') }}" class="btn btn-primary">➕ Write a New Review</a>
+        </div>
+    {% else %}
+        <div class="intro-box" style="text-align:center; margin:40px 0;">
+            <h1 style="font-size:2.2em; color:#1e3a8a;">📚 Mini Social Media for Book & Movie Lovers 🎬</h1>
+            <p style="max-width:700px; margin:15px auto; font-size:1.1em; color:#475569; line-height:1.7;">
+                Welcome to <strong>ReviewSphere</strong> — a cozy corner for readers and movie buffs!  
+                Discover reviews, rate what you love, share your thoughts, and see what others are enjoying.  
+                <br><br>
+                <a href="{{ url_for('register') }}" class="btn btn-primary">Join the Community</a>
+                <a href="{{ url_for('login') }}" class="btn btn-outline" style="margin-left:10px;">Login</a>
+            </p>
+        </div>
+    {% endif %}
+
+    {% if reviews %}
+        <div class="feed">
+         {% for review in reviews %}
+<div class="review-card">
+    <h3>{{ review.title }}</h3>
+    <small>by <strong>{{ review.author.username }}</strong> | {{ review.date_posted.strftime("%b %d, %Y") }}</small>
+    <span style="background: #3b82f6; color: white; padding: 2px 10px; border-radius: 20px; font-size: 0.8em;">
+        {{ review.category }}
+    </span>
+    <div class="stars">
+        {% for i in range(review.rating) %}⭐{% endfor %}
+    </div>
+    <p>{{ review.content[:180] }}{% if review.content|length > 180 %}...{% endif %}</p>
+
+    <div class="interactions">
+       <form class="like-form" data-review-id="{{ review.id }}">
+    <button type="submit" class="like-btn {% if user_liked %}liked{% endif %}">❤</button>
+    <span id="like-count-{{ review.id }}">{{ review.like_count }} Likes</span>
+</form>
+
+<br/>
+        <a href="{{ url_for('review_detail', review_id=review.id) }}" class="btn btn-outline">View Details</a>
+
+     
+
+
+    </div>
+</div>
+{% endfor %}
+
+        </div>
+    {% else %}
+        <p style="text-align:center; color:#64748b;">No reviews yet. Be the first to share one!</p>
+    {% endif %}
+</div>
+{% endblock %}

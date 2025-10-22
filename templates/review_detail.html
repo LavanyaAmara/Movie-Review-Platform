@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <h2>{{ review.title }}</h2>
+    <small>by <strong>{{ review.author.username }}</strong> | {{ review.date_posted.strftime("%b %d, %Y") }}</small>
+    <span class="category">{{ review.category }}</span>
+    <div class="stars">{% for i in range(review.rating) %}⭐{% endfor %}</div>
+    <p>{{ review.content }}</p>
+
+    <div class="interactions">
+        <form id="like-form" action="{{ url_for('like_review', review_id=review.id) }}" method="post">
+            <button type="submit" class="like-btn {% if user_liked %}liked{% endif %}">❤</button>
+            <span id="like-count">{{ review.like_count }} Likes</span>
+        </form>
+
+        {% if current_user.is_authenticated and current_user.id == review.user_id %}
+            <form action="{{ url_for('delete_review', review_id=review.id) }}" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+        {% endif %}
+    </div>
+
+    <hr>
+    <h3>Comments</h3>
+    {% if current_user.is_authenticated %}
+        <form method="POST">
+            <textarea name="text" rows="3" placeholder="Write a comment..." required></textarea>
+            <button type="submit" class="btn btn-primary">Comment</button>
+        </form>
+    {% else %}
+        <p>Please <a href="{{ url_for('login') }}">login</a> to like and comment.</p>
+    {% endif %}
+
+    {% for comment in comments %}
+        <div class="comment">
+            <p><strong>{{ comment.user.username }}</strong> — {{ comment.date_posted.strftime("%b %d, %Y") }}</p>
+            <p>{{ comment.text }}</p>
+        </div>
+    {% endfor %}
+</div>
+
+<!-- ✅ JavaScript to handle popup and like count -->
+<script>
+document.getElementById('like-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const response = await fetch(this.action, { method: 'POST' });
+    const data = await response.json();
+
+    // Show popup
+    if (data.liked) {
+        alert('You liked this post ❤️');
+        document.querySelector('.like-btn').classList.add('liked');
+    } else {
+        alert('You unliked this post 💔');
+        document.querySelector('.like-btn').classList.remove('liked');
+    }
+
+    // Update like count instantly
+    document.getElementById('like-count').innerText = data.like_count + " Likes";
+});
+</script>
+{% endblock %}

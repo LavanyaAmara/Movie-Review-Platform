@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 70vh;">
+<h2 style="text-align: center;">🧾 Register</h2>
+  <form method="POST" class="form-card" style="display: flex; flex-direction: column; width: 300px; gap: 10px;">
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit" class="btn">Register</button>
+    </form>
+<p style="text-align: center;  margin-top: 15px;">
+    Already have an account? <a href="{{ url_for('login') }}">Login here</a>.</p>
+</div>
+{% endblock %}
+
